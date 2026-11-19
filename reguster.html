@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - SPMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 'sans': ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Decorative Gradient Blobs -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div class="absolute -top-32 -right-32 w-80 h-80 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full blur-3xl opacity-25 animate-blob-1"></div>
+        <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-gradient-to-bl from-purple-600 to-pink-500 rounded-full blur-3xl opacity-25 animate-blob-2"></div>
+    </div>
+
+    <!-- Simple Navbar -->
+    <header class="w-full bg-white/90 backdrop-blur-md border-b border-gray-100 py-4 px-6 sm:px-10 flex items-center justify-between">
+        <a href="index.html" class="flex items-center space-x-3 group">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-chart-line text-base"></i>
+            </div>
+            <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                SPMA
+            </span>
+        </a>
+        <a href="index.html" class="text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-left text-xs"></i>
+            <span>Back to Home</span>
+        </a>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div class="w-full max-w-md">
+            <!-- Register Card -->
+            <div id="register-card" class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 sm:p-10 transition-all">
+                
+                <!-- Header -->
+                <div class="text-center mb-7">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 mx-auto flex items-center justify-center text-xl mb-3 shadow-inner">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                        Create Account
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-2">Start your placement preparation journey</p>
+                </div>
+
+                <!-- Error Alert Box -->
+                <div id="error-alert" class="hidden mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-3">
+                    <i class="fa-solid fa-circle-exclamation mt-0.5 text-base flex-shrink-0 text-red-500"></i>
+                    <span id="error-message">Validation failed.</span>
+                </div>
+
+                <!-- Success Alert Box -->
+                <div id="success-alert" class="hidden mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm flex items-start gap-3">
+                    <i class="fa-solid fa-circle-check mt-0.5 text-base flex-shrink-0 text-emerald-500"></i>
+                    <span>Account created successfully! Redirecting...</span>
+                </div>
+
+                <!-- Registration Form -->
+                <form id="register-form" class="space-y-4" novalidate>
+                    <!-- Full Name Field -->
+                    <div>
+                        <label for="name" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">
+                            Full Name
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name"
+                                required
+                                placeholder="Alex Morgan"
+                                class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm placeholder-gray-400 transition-all shadow-sm"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div>
+                        <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">
+                            College / Personal Email
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-regular fa-envelope"></i>
+                            </div>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email"
+                                required
+                                placeholder="alex@university.edu"
+                                class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm placeholder-gray-400 transition-all shadow-sm"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">
+                            Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-lock text-xs"></i>
+                            </div>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password"
+                                required
+                                placeholder="At least 6 characters"
+                                class="w-full pl-10 pr-11 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm placeholder-gray-400 transition-all shadow-sm"
+                            >
+                            <button 
+                                type="button" 
+                                id="toggle-password" 
+                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+                                aria-label="Toggle password visibility"
+                            >
+                                <i class="fa-regular fa-eye" id="toggle-password-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Password Field -->
+                    <div>
+                        <label for="confirm-password" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">
+                            Confirm Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-shield-halved text-xs"></i>
+                            </div>
+                            <input 
+                                type="password" 
+                                id="confirm-password" 
+                                name="confirmPassword"
+                                required
+                                placeholder="Re-enter password"
+                                class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm placeholder-gray-400 transition-all shadow-sm"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Terms & Conditions Checkbox -->
+                    <div class="pt-1">
+                        <label class="flex items-start text-xs sm:text-sm text-gray-600 cursor-pointer">
+                            <input 
+                                type="checkbox" 
+                                id="terms"
+                                required
+                                class="mt-0.5 w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                            >
+                            <span class="ml-2">
+                                I agree to the <span class="text-indigo-600 font-medium">terms & conditions</span> and privacy policy.
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        id="submit-btn"
+                        class="w-full mt-2 py-3.5 px-4 rounded-xl text-white font-semibold text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-300 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
+                    >
+                        <span>Create Account</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-xs uppercase">
+                        <span class="bg-white px-3 text-gray-400 font-medium tracking-wider">or</span>
+                    </div>
+                </div>
+
+                <!-- Footer link to login -->
+                <p class="text-center text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="login.html" class="font-semibold text-indigo-600 hover:text-purple-600 transition-colors">
+                        Sign In
+                    </a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Shared Auth Script -->
+    <script src="js/auth.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        // Redirect if already logged in
+        if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+            window.location.href = 'select-domain.html';
+        }
+
+        const registerForm = document.getElementById('register-form');
+        const registerCard = document.getElementById('register-card');
+        const errorAlert = document.getElementById('error-alert');
+        const errorMessage = document.getElementById('error-message');
+        const successAlert = document.getElementById('success-alert');
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const togglePasswordIcon = document.getElementById('toggle-password-icon');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const termsInput = document.getElementById('terms');
+
+        // Toggle password show/hide
+        togglePassword.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                togglePasswordIcon.classList.remove('fa-eye');
+                togglePasswordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                togglePasswordIcon.classList.remove('fa-eye-slash');
+                togglePasswordIcon.classList.add('fa-eye');
+            }
+        });
+
+        // Email validation helper regex
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Form submission
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            errorAlert.classList.add('hidden');
+            successAlert.classList.add('hidden');
+
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            const termsAccepted = termsInput.checked;
+
+            // Form validations
+            if (!name) {
+                showError('Please enter your full name.');
+                nameInput.focus();
+                return;
+            }
+
+            if (!email || !isValidEmail(email)) {
+                showError('Please enter a valid email address.');
+                emailInput.focus();
+                return;
+            }
+
+            if (!password || password.length < 6) {
+                showError('Password must be at least 6 characters long.');
+                passwordInput.focus();
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('Passwords do not match. Please verify.');
+                confirmPasswordInput.focus();
+                return;
+            }
+
+            if (!termsAccepted) {
+                showError('Please accept the terms & conditions to continue.');
+                return;
+            }
+
+            // Call auth.js register function
+            const result = registerUser(name, email, password);
+            if (result.success) {
+                successAlert.classList.remove('hidden');
+                registerForm.reset();
+                setTimeout(() => {
+                    window.location.href = 'select-domain.html';
+                }, 1000);
+            } else {
+                showError(result.message || 'Registration failed. Please try again.');
+            }
+        });
+
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorAlert.classList.remove('hidden');
+            
+            // Shake effect on card
+            registerCard.classList.remove('shake');
+            void registerCard.offsetWidth; // Trigger reflow
+            registerCard.classList.add('shake');
+        }
+    </script>
+</body>
+</html>
