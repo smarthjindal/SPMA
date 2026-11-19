@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Domain - SPMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { 'sans': ['Inter', 'sans-serif'] } } }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Glowing Background Decorative Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div class="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full blur-3xl opacity-15 animate-blob-1"></div>
+        <div class="absolute top-1/2 -right-32 w-96 h-96 bg-gradient-to-bl from-purple-500 to-pink-500 rounded-full blur-3xl opacity-15 animate-blob-2"></div>
+        <div class="absolute -bottom-32 left-1/3 w-[30rem] h-[30rem] bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full blur-3xl opacity-10 animate-blob-1"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <i class="fas fa-chart-line text-indigo-600 text-2xl"></i>
+                        <span class="text-xl font-bold gradient-text">SPMA</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="select-domain.html" class="text-indigo-600 font-semibold transition">Domains</a>
+                    <a href="dashboard.html" class="text-gray-600 hover:text-indigo-600 transition font-medium">Dashboard</a>
+                    <span id="nav-username" class="text-gray-700 font-medium bg-gray-100 px-3 py-1 rounded-full text-sm"></span>
+                    <button onclick="logout()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:shadow-lg transition">Logout</button>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-gray-600"><i class="fas fa-bars text-xl"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-3 space-y-2">
+                <a href="select-domain.html" class="block text-indigo-600 font-semibold py-2">Domains</a>
+                <a href="dashboard.html" class="block text-gray-600 hover:text-indigo-600 py-2">Dashboard</a>
+                <button onclick="logout()" class="w-full text-left text-red-600 py-2">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        <!-- Page Header -->
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold tracking-wide uppercase mb-3">
+                <i class="fas fa-bullseye"></i>
+                <span>Skill Assessment Tracks</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight">
+                Choose Your <span class="gradient-text">Domain</span>
+            </h1>
+            <p class="mt-4 text-base sm:text-lg text-gray-600 leading-relaxed">
+                Select the technical domain you want to assess your skills in. Each assessment features curated questions tailored for placement readiness.
+            </p>
+        </div>
+
+        <!-- Domain Grid -->
+        <div id="domains-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Dynamically populated via JavaScript -->
+        </div>
+
+        <!-- Bottom Info Section -->
+        <div class="mt-16 bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 shadow-sm">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-start space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900">Assessment Guidelines & Format</h2>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Each assessment contains <span class="font-semibold text-gray-800">15 MCQ questions</span> to be completed in <span class="font-semibold text-gray-800">15 minutes</span>. After completion, our placement analytics engine will analyze your topic-wise strengths and provide customized learning recommendations.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 shrink-0">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-xs text-gray-400">Questions per test</p>
+                        <p class="text-sm font-bold text-gray-700">15 Questions</p>
+                    </div>
+                    <div class="h-8 w-px bg-gray-200 hidden sm:block"></div>
+                    <div class="text-right hidden sm:block">
+                        <p class="text-xs text-gray-400">Time allowed</p>
+                        <p class="text-sm font-bold text-gray-700">15 Minutes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 py-6 mt-12 text-center text-xs text-gray-400">
+        <p>&copy; 2026 Student Placement Management Analytics (SPMA). All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/data.js"></script>
+    <script>
+        // Enforce Authentication
+        requireAuth();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDomains();
+        });
+
+        function renderDomains() {
+            const grid = document.getElementById('domains-grid');
+            if (!grid) return;
+
+            const test1Results = getTestResults(1);
+            const test2Results = getTestResults(2);
+
+            grid.innerHTML = DOMAINS.map(domain => {
+                // Check test status for this domain
+                const test1ForDomain = test1Results && test1Results.domainId === domain.id;
+                const test2ForDomain = test2Results && test2Results.domainId === domain.id;
+
+                let statusBadge = '';
+                let actionBtnText = 'Start Assessment';
+                let actionBtnClass = 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700';
+                let nextTestNum = 1;
+
+                if (test1ForDomain && test2ForDomain) {
+                    statusBadge = `
+                        <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
+                            <i class="fas fa-check-double text-emerald-600"></i>
+                            <span>Both Tests Completed (${test2ForDomain.score}%)</span>
+                        </div>
+                    `;
+                    actionBtnText = 'View Results & Dashboard';
+                    actionBtnClass = 'bg-emerald-600 text-white hover:bg-emerald-700';
+                    nextTestNum = 0; // indicates review/dashboard
+                } else if (test1ForDomain) {
+                    statusBadge = `
+                        <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold">
+                            <i class="fas fa-check-circle text-indigo-600"></i>
+                            <span>Test 1 Completed (${test1ForDomain.score}%)</span>
+                        </div>
+                    `;
+                    actionBtnText = 'Take Test 2';
+                    actionBtnClass = 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700';
+                    nextTestNum = 2;
+                }
+
+                // Topic badges
+                const topicsPills = domain.topics.map(topic => 
+                    `<span class="inline-block px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium">${topic}</span>`
+                ).join(' ');
+
+                return `
+                    <div class="card-hover bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between transition-all">
+                        <div>
+                            <!-- Header with dynamic gradient and icon -->
+                            <div class="p-6 bg-gradient-to-r ${domain.bgGradient} text-white flex items-center justify-between">
+                                <div class="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner">
+                                    <i class="fas ${domain.icon}"></i>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-xs font-semibold uppercase tracking-wider rounded-full">
+                                        MCA Level
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-2 mb-2">
+                                    <h2 class="text-xl font-bold text-gray-900">${domain.name}</h2>
+                                </div>
+
+                                <!-- Status Badge if test taken -->
+                                <div class="mb-3">
+                                    ${statusBadge}
+                                </div>
+
+                                <p class="text-sm text-gray-600 mb-5 leading-relaxed">
+                                    ${domain.description}
+                                </p>
+
+                                <!-- Topics Pills -->
+                                <div class="mb-5">
+                                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Key Topics</p>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        ${topicsPills}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div class="px-6 pb-6 pt-3 border-t border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex items-center text-xs text-gray-500 space-x-2">
+                                <span><i class="far fa-question-circle text-indigo-500 mr-1"></i> 15 Questions</span>
+                                <span>•</span>
+                                <span><i class="far fa-clock text-indigo-500 mr-1"></i> 15 Minutes</span>
+                            </div>
+
+                            <button onclick="handleDomainSelect('${domain.id}', ${nextTestNum})" 
+                                class="${actionBtnClass} px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all transform active:scale-95 text-center">
+                                ${actionBtnText}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function handleDomainSelect(domainId, testNum) {
+            // Save selected domain
+            setSelectedDomain(domainId);
+
+            if (testNum === 0) {
+                // If both tests completed, redirect to dashboard or results
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Set current test number
+            setCurrentTestNumber(testNum);
+
+            // Redirect to test page
+            window.location.href = 'test.html';
+        }
+    </script>
+</body>
+</html>
