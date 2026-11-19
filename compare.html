@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Comparison - SPMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { 'sans': ['Inter', 'sans-serif'] } } }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col font-sans antialiased">
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <i class="fas fa-chart-line text-indigo-600 text-2xl"></i>
+                        <span class="text-xl font-bold gradient-text">SPMA</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="select-domain.html" class="text-gray-600 hover:text-indigo-600 transition font-medium">Domains</a>
+                    <a href="dashboard.html" class="text-gray-600 hover:text-indigo-600 transition font-medium">Dashboard</a>
+                    <span id="nav-username" class="text-gray-700 font-medium"></span>
+                    <button onclick="logout()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:shadow-lg transition">Logout</button>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-gray-600"><i class="fas fa-bars text-xl"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-3 space-y-2">
+                <a href="select-domain.html" class="block text-gray-600 hover:text-indigo-600 py-2">Domains</a>
+                <a href="dashboard.html" class="block text-gray-600 hover:text-indigo-600 py-2">Dashboard</a>
+                <button onclick="logout()" class="w-full text-left text-red-600 py-2">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <!-- Header Banner -->
+        <section class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-8 sm:p-10 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-3 flex-wrap">
+                        <span class="px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold tracking-wide uppercase">Comparative Analytics</span>
+                        <span id="domain-header-badge" class="px-3.5 py-1 rounded-full bg-indigo-900/40 backdrop-blur-md text-xs font-medium border border-white/20">Web Development</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Performance Comparison</h1>
+                    <p class="text-indigo-100 text-sm sm:text-base mt-2 flex items-center gap-2">
+                        <span>Pre-Assessment (Test 1) vs Post-Learning Assessment (Test 2)</span>
+                    </p>
+                </div>
+                <div class="flex items-center gap-4 self-start md:self-auto">
+                    <div class="bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center min-w-[140px]">
+                        <span class="text-xs uppercase tracking-wider text-indigo-100 block font-medium">Domain</span>
+                        <span id="domain-name-header" class="text-xl font-bold">Web Dev</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fallback Alert if Test 2 not taken -->
+        <div id="missing-test-notice" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-6 text-amber-900 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-circle-info text-amber-500 text-2xl"></i>
+                <div>
+                    <h3 class="font-bold text-sm sm:text-base">Incomplete Test Cycle</h3>
+                    <p class="text-xs sm:text-sm text-amber-700 mt-0.5">You haven't completed Test 2 yet. Showing sample benchmark comparison so you can preview this report.</p>
+                </div>
+            </div>
+            <button onclick="takeTest2()" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs sm:text-sm shrink-0 shadow-sm transition">
+                Take Test 2 Now
+            </button>
+        </div>
+
+        <!-- Overall Comparison Cards (2 big cards + improvement badge) -->
+        <section class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <!-- Test 1 Card -->
+            <div class="md:col-span-5 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 relative overflow-hidden card-hover">
+                <div class="absolute top-0 left-0 w-2 h-full bg-indigo-500"></div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 uppercase tracking-wider">Test 1 (Baseline)</span>
+                    <i class="fas fa-history text-gray-400 text-lg"></i>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="t1-score" class="text-5xl font-black text-gray-900">0%</span>
+                    <span id="t1-fraction" class="text-sm font-semibold text-gray-500">(0/15 Correct)</span>
+                </div>
+                <p id="t1-date" class="text-xs text-gray-400 mt-3 flex items-center gap-1.5">
+                    <i class="far fa-calendar"></i> Taken on Oct 11, 2026
+                </p>
+            </div>
+
+            <!-- Arrow / Improvement Badge in middle -->
+            <div class="md:col-span-2 flex flex-col items-center justify-center py-2">
+                <div id="improvement-circle" class="w-20 h-20 rounded-full bg-emerald-50 border-2 border-emerald-200 flex flex-col items-center justify-center text-center shadow-md">
+                    <i id="improvement-arrow" class="fas fa-arrow-trend-up text-emerald-600 text-xl mb-0.5"></i>
+                    <span id="improvement-pct" class="text-sm font-black text-emerald-700">+0%</span>
+                </div>
+                <span id="improvement-sub" class="text-xs font-semibold text-gray-500 mt-2 uppercase tracking-wider text-center">Net Growth</span>
+            </div>
+
+            <!-- Test 2 Card -->
+            <div class="md:col-span-5 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 relative overflow-hidden card-hover">
+                <div class="absolute top-0 right-0 w-2 h-full bg-purple-600"></div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-100 uppercase tracking-wider">Test 2 (Post-Course)</span>
+                    <i class="fas fa-trophy text-purple-400 text-lg"></i>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="t2-score" class="text-5xl font-black text-purple-700">0%</span>
+                    <span id="t2-fraction" class="text-sm font-semibold text-gray-500">(0/15 Correct)</span>
+                </div>
+                <p id="t2-date" class="text-xs text-gray-400 mt-3 flex items-center gap-1.5">
+                    <i class="far fa-calendar-check"></i> Taken on Oct 12, 2026
+                </p>
+            </div>
+        </section>
+
+        <!-- Charts Comparison Row (Grouped Bar Chart + Radar Chart) -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Grouped Bar Chart -->
+            <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Topic-wise Score Comparison</h2>
+                        <p class="text-xs text-gray-500">Grouped side-by-side percentage accuracy across curriculum topics</p>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs font-semibold">
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-indigo-500"></span> Test 1</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-purple-600"></span> Test 2</span>
+                    </div>
+                </div>
+                <div class="relative flex-grow min-h-[320px]">
+                    <canvas id="topicComparisonBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Radar Chart -->
+            <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Skill Coverage Radar</h2>
+                        <p class="text-xs text-gray-500">Multi-axis proficiency expansion profile</p>
+                    </div>
+                </div>
+                <div class="relative flex-grow min-h-[320px] flex items-center justify-center">
+                    <canvas id="skillRadarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvement Table -->
+        <section class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 overflow-hidden">
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">Granular Improvement Table</h2>
+                    <p class="text-xs text-gray-500">Detailed metric shifts for each test topic</p>
+                </div>
+                <span class="text-xs font-semibold px-3 py-1 bg-gray-100 text-gray-700 rounded-full">5 Evaluated Subjects</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="text-xs uppercase tracking-wider text-gray-400 border-b border-gray-100 bg-gray-50/50">
+                            <th class="py-3 px-4 font-semibold rounded-l-xl">Topic</th>
+                            <th class="py-3 px-4 font-semibold text-center">Test 1 Score</th>
+                            <th class="py-3 px-4 font-semibold text-center">Test 2 Score</th>
+                            <th class="py-3 px-4 font-semibold text-center">Change</th>
+                            <th class="py-3 px-4 font-semibold text-center rounded-r-xl">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="improvement-table-body" class="divide-y divide-gray-100">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Key Insights Section -->
+        <section class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 space-y-6">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">Key AI Insights & Readiness Audit</h2>
+                <p class="text-xs text-gray-500">Synthesized observations based on your progression trajectory</p>
+            </div>
+
+            <div id="insights-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Injected dynamically -->
+            </div>
+        </section>
+
+        <!-- Bottom Action CTA Buttons -->
+        <section class="bg-gradient-to-r from-gray-900 to-indigo-950 text-white rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+                <h3 class="text-xl font-bold">Ready to Explore Full Analytics?</h3>
+                <p class="text-sm text-gray-300 mt-1">Access placement probability gauges, time-series metrics, and print reports</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <a href="dashboard.html" class="flex-1 md:flex-none text-center bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition">
+                    <i class="fas fa-chart-pie mr-2"></i> View Full Dashboard
+                </a>
+                <a href="select-domain.html" class="flex-1 md:flex-none text-center bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold px-5 py-3 rounded-xl transition">
+                    <i class="fas fa-rotate-right mr-2"></i> Retake / New Domain
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
+            &copy; 2026 Student Placement Management Analytics (SPMA). Built for student placement success.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/data.js"></script>
+    <script>
+        requireAuth();
+
+        let barChartInstance = null;
+        let radarChartInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initComparePage();
+        });
+
+        function takeTest2() {
+            setCurrentTestNumber(2);
+            window.location.href = 'test.html';
+        }
+
+        function initComparePage() {
+            let t1 = getTestResults(1);
+            let t2 = getTestResults(2);
+
+            const domainId = t1?.domainId || t2?.domainId || getSelectedDomain() || 'webdev';
+            const domain = getDomainById(domainId) || { id: 'webdev', name: 'Web Development', topics: ['HTML', 'CSS', 'JavaScript', 'React', 'Node.js'] };
+
+            document.getElementById('domain-header-badge').textContent = domain.name;
+            document.getElementById('domain-name-header').textContent = domain.name;
+
+            // Handle edge case: missing either test results
+            if (!t1 || !t2) {
+                document.getElementById('missing-test-notice').classList.remove('hidden');
+
+                // If test 1 is present but test 2 is missing, provide a realistic simulated test 2 so charts and UI are demonstrated beautifully
+                if (t1 && !t2) {
+                    t2 = {
+                        domainId: domain.id,
+                        testNumber: 2,
+                        totalQuestions: 15,
+                        correctAnswers: Math.min(15, (t1.correctAnswers || 10) + 3),
+                        score: Math.min(100, Math.round(((t1.score || 66.67) + 20) * 100) / 100),
+                        topicScores: {},
+                        date: new Date().toISOString(),
+                        timeTaken: Math.max(300, (t1.timeTaken || 540) - 80)
+                    };
+
+                    // Populate boosted topicScores
+                    domain.topics.forEach(t => {
+                        const oldScore = t1.topicScores && t1.topicScores[t] ? t1.topicScores[t].percentage : 50;
+                        const newCorrect = oldScore < 66 ? 3 : 3;
+                        t2.topicScores[t] = { correct: newCorrect, total: 3, percentage: Math.round((newCorrect / 3) * 100) };
+                    });
+                } else if (!t1 && !t2) {
+                    // Fully mocked sample dataset
+                    t1 = {
+                        domainId: domain.id,
+                        testNumber: 1,
+                        totalQuestions: 15,
+                        correctAnswers: 10,
+                        score: 66.67,
+                        topicScores: {
+                            'HTML': { correct: 2, total: 3, percentage: 66.67 },
+                            'CSS': { correct: 3, total: 3, percentage: 100 },
+                            'JavaScript': { correct: 2, total: 3, percentage: 66.67 },
+                            'React': { correct: 1, total: 3, percentage: 33.33 },
+                            'Node.js': { correct: 2, total: 3, percentage: 66.67 }
+                        },
+                        date: new Date(Date.now() - 86400000).toISOString(),
+                        timeTaken: 540
+                    };
+                    t2 = {
+                        domainId: domain.id,
+                        testNumber: 2,
+                        totalQuestions: 15,
+                        correctAnswers: 13,
+                        score: 86.67,
+                        topicScores: {
+                            'HTML': { correct: 3, total: 3, percentage: 100 },
+                            'CSS': { correct: 3, total: 3, percentage: 100 },
+                            'JavaScript': { correct: 3, total: 3, percentage: 100 },
+                            'React': { correct: 2, total: 3, percentage: 66.67 },
+                            'Node.js': { correct: 2, total: 3, percentage: 66.67 }
+                        },
+                        date: new Date().toISOString(),
+                        timeTaken: 460
+                    };
+                }
+            }
+
+            // Fill Overall Comparison Cards
+            const score1 = Math.round(t1.score || 0);
+            const score2 = Math.round(t2.score || 0);
+            const diff = score2 - score1;
+
+            document.getElementById('t1-score').textContent = `${score1}%`;
+            document.getElementById('t1-fraction').textContent = `(${t1.correctAnswers || 0}/${t1.totalQuestions || 15} Correct)`;
+            document.getElementById('t1-date').innerHTML = `<i class="far fa-calendar"></i> Taken: ${formatDate(t1.date)}`;
+
+            document.getElementById('t2-score').textContent = `${score2}%`;
+            document.getElementById('t2-fraction').textContent = `(${t2.correctAnswers || 0}/${t2.totalQuestions || 15} Correct)`;
+            document.getElementById('t2-date').innerHTML = `<i class="far fa-calendar-check"></i> Taken: ${formatDate(t2.date)}`;
+
+            // Growth indicator styling
+            const improvementCircle = document.getElementById('improvement-circle');
+            const improvementArrow = document.getElementById('improvement-arrow');
+            const improvementPct = document.getElementById('improvement-pct');
+
+            if (diff > 0) {
+                improvementPct.textContent = `+${diff}%`;
+                improvementPct.className = 'text-sm font-black text-emerald-700';
+                improvementArrow.className = 'fas fa-arrow-trend-up text-emerald-600 text-xl mb-0.5';
+                improvementCircle.className = 'w-20 h-20 rounded-full bg-emerald-50 border-2 border-emerald-200 flex flex-col items-center justify-center text-center shadow-md';
+            } else if (diff === 0) {
+                improvementPct.textContent = `0%`;
+                improvementPct.className = 'text-sm font-black text-gray-700';
+                improvementArrow.className = 'fas fa-arrow-right text-gray-500 text-xl mb-0.5';
+                improvementCircle.className = 'w-20 h-20 rounded-full bg-gray-50 border-2 border-gray-200 flex flex-col items-center justify-center text-center shadow-md';
+            } else {
+                improvementPct.textContent = `${diff}%`;
+                improvementPct.className = 'text-sm font-black text-rose-700';
+                improvementArrow.className = 'fas fa-arrow-trend-down text-rose-600 text-xl mb-0.5';
+                improvementCircle.className = 'w-20 h-20 rounded-full bg-rose-50 border-2 border-rose-200 flex flex-col items-center justify-center text-center shadow-md';
+            }
+
+            // Render Charts
+            const topics = domain.topics || Object.keys(t1.topicScores || {});
+            const t1Scores = topics.map(top => Math.round(t1.topicScores?.[top]?.percentage || 0));
+            const t2Scores = topics.map(top => Math.round(t2.topicScores?.[top]?.percentage || 0));
+
+            renderGroupedBarChart(topics, t1Scores, t2Scores);
+            renderRadarChart(topics, t1Scores, t2Scores);
+
+            // Render Improvement Table
+            renderTable(topics, t1Scores, t2Scores);
+
+            // Render Key Insights
+            renderInsights(topics, t1Scores, t2Scores, diff, score2);
+        }
+
+        function formatDate(isoStr) {
+            if (!isoStr) return 'Recently';
+            const d = new Date(isoStr);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function renderGroupedBarChart(topics, t1Scores, t2Scores) {
+            const ctx = document.getElementById('topicComparisonBarChart').getContext('2d');
+            if (barChartInstance) barChartInstance.destroy();
+
+            barChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: topics,
+                    datasets: [
+                        {
+                            label: 'Test 1',
+                            data: t1Scores,
+                            backgroundColor: 'rgba(99, 102, 241, 0.85)',
+                            borderColor: 'rgb(99, 102, 241)',
+                            borderWidth: 1.5,
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Test 2',
+                            data: t2Scores,
+                            backgroundColor: 'rgba(168, 85, 247, 0.85)',
+                            borderColor: 'rgb(168, 85, 247)',
+                            borderWidth: 1.5,
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: { callback: v => v + '%', font: { family: 'Inter', size: 11 } },
+                            grid: { color: 'rgba(243, 244, 246, 1)' }
+                        },
+                        x: {
+                            ticks: { font: { family: 'Inter', weight: 600, size: 11 }, color: '#374151' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRadarChart(topics, t1Scores, t2Scores) {
+            const ctx = document.getElementById('skillRadarChart').getContext('2d');
+            if (radarChartInstance) radarChartInstance.destroy();
+
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: topics,
+                    datasets: [
+                        {
+                            label: 'Test 1 (Initial)',
+                            data: t1Scores,
+                            backgroundColor: 'rgba(99, 102, 241, 0.25)',
+                            borderColor: 'rgb(99, 102, 241)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgb(99, 102, 241)',
+                            pointRadius: 3
+                        },
+                        {
+                            label: 'Test 2 (Post-Course)',
+                            data: t2Scores,
+                            backgroundColor: 'rgba(16, 185, 129, 0.25)',
+                            borderColor: 'rgb(16, 185, 129)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgb(16, 185, 129)',
+                            pointRadius: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { family: 'Inter', size: 11 } }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: { display: false, stepSize: 25 },
+                            pointLabels: {
+                                font: { family: 'Inter', size: 11, weight: 600 },
+                                color: '#4b5563'
+                            },
+                            angleLines: { color: 'rgba(229, 231, 235, 0.8)' },
+                            grid: { color: 'rgba(229, 231, 235, 0.8)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTable(topics, t1Scores, t2Scores) {
+            const tbody = document.getElementById('improvement-table-body');
+            tbody.innerHTML = '';
+
+            topics.forEach((topic, idx) => {
+                const s1 = t1Scores[idx];
+                const s2 = t2Scores[idx];
+                const diff = s2 - s1;
+
+                let changeHtml = '';
+                let statusHtml = '';
+
+                if (diff > 0) {
+                    changeHtml = `<span class="font-bold text-emerald-600">+${diff}%</span>`;
+                    statusHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">📈 Improved</span>`;
+                } else if (diff === 0) {
+                    changeHtml = `<span class="font-semibold text-gray-500">0%</span>`;
+                    statusHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">➡️ Same</span>`;
+                } else {
+                    changeHtml = `<span class="font-bold text-rose-600">${diff}%</span>`;
+                    statusHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800">📉 Declined</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50/60 transition';
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-bold text-gray-900">${topic}</td>
+                    <td class="py-3.5 px-4 text-center font-medium text-gray-600">${s1}%</td>
+                    <td class="py-3.5 px-4 text-center font-bold text-purple-700">${s2}%</td>
+                    <td class="py-3.5 px-4 text-center">${changeHtml}</td>
+                    <td class="py-3.5 px-4 text-center">${statusHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderInsights(topics, t1Scores, t2Scores, overallDiff, test2Score) {
+            const container = document.getElementById('insights-container');
+            container.innerHTML = '';
+
+            // Find biggest improvement
+            let maxGain = -999;
+            let biggestTopic = topics[0];
+            let maintainedTopic = null;
+            let revisitTopic = null;
+
+            topics.forEach((topic, idx) => {
+                const diff = t2Scores[idx] - t1Scores[idx];
+                if (diff > maxGain) {
+                    maxGain = diff;
+                    biggestTopic = topic;
+                }
+                if (t1Scores[idx] >= 66 && t2Scores[idx] >= 66 && !maintainedTopic) {
+                    maintainedTopic = topic;
+                }
+                if (t2Scores[idx] < 66 && !revisitTopic) {
+                    revisitTopic = topic;
+                }
+            });
+
+            // Card 1: Biggest Improvement
+            const c1 = document.createElement('div');
+            c1.className = 'p-5 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex flex-col justify-between';
+            c1.innerHTML = `
+                <div>
+                    <span class="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-sm font-bold mb-3">
+                        <i class="fas fa-arrow-trend-up"></i>
+                    </span>
+                    <h4 class="font-bold text-indigo-950 text-sm">Top Acceleration</h4>
+                    <p class="text-xs text-indigo-800 mt-1 leading-relaxed">
+                        Biggest improvement recorded in <strong class="text-indigo-900">${biggestTopic}</strong> with a <strong class="text-indigo-900">+${Math.max(0, maxGain)}%</strong> score leap.
+                    </p>
+                </div>
+            `;
+            container.appendChild(c1);
+
+            // Card 2: Maintained Performance
+            const c2 = document.createElement('div');
+            c2.className = 'p-5 rounded-2xl bg-emerald-50/70 border border-emerald-100 flex flex-col justify-between';
+            c2.innerHTML = `
+                <div>
+                    <span class="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-sm font-bold mb-3">
+                        <i class="fas fa-shield-halved"></i>
+                    </span>
+                    <h4 class="font-bold text-emerald-950 text-sm">Consistency Anchor</h4>
+                    <p class="text-xs text-emerald-800 mt-1 leading-relaxed">
+                        Strong high-tier retention maintained in <strong class="text-emerald-900">${maintainedTopic || biggestTopic}</strong> across both evaluations.
+                    </p>
+                </div>
+            `;
+            container.appendChild(c2);
+
+            // Card 3: Actionable Revisit
+            const c3 = document.createElement('div');
+            c3.className = 'p-5 rounded-2xl bg-amber-50/70 border border-amber-100 flex flex-col justify-between';
+            c3.innerHTML = `
+                <div>
+                    <span class="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center text-sm font-bold mb-3">
+                        <i class="fas fa-rotate"></i>
+                    </span>
+                    <h4 class="font-bold text-amber-950 text-sm">Recommended Revisit</h4>
+                    <p class="text-xs text-amber-800 mt-1 leading-relaxed">
+                        Consider reviewing <strong class="text-amber-900">${revisitTopic || 'edge case patterns'}</strong> for further interview interview readiness.
+                    </p>
+                </div>
+            `;
+            container.appendChild(c3);
+
+            // Card 4: Placement Readiness Outlook
+            const readinessText = test2Score >= 75 ? 'Optimal hiring potential for technical screening rounds' : test2Score >= 50 ? 'Viable candidate profile with minor topic revision remaining' : 'Pre-placement revision advised before campus interviews';
+            const c4 = document.createElement('div');
+            c4.className = 'p-5 rounded-2xl bg-purple-50/70 border border-purple-100 flex flex-col justify-between';
+            c4.innerHTML = `
+                <div>
+                    <span class="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center text-sm font-bold mb-3">
+                        <i class="fas fa-bullseye"></i>
+                    </span>
+                    <h4 class="font-bold text-purple-950 text-sm">Placement Outlook</h4>
+                    <p class="text-xs text-purple-800 mt-1 leading-relaxed">
+                        ${readinessText}.
+                    </p>
+                </div>
+            `;
+            container.appendChild(c4);
+        }
+    </script>
+</body>
+</html>
