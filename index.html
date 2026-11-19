@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Analytics - SPMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 'sans': ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Background Decorative Glowing Blobs -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full blur-3xl opacity-20 animate-blob-1"></div>
+        <div class="absolute top-1/3 -right-40 w-96 h-96 bg-gradient-to-bl from-purple-600 to-pink-500 rounded-full blur-3xl opacity-20 animate-blob-2"></div>
+        <div class="absolute -bottom-40 left-1/4 w-[32rem] h-[32rem] bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full blur-3xl opacity-15 animate-blob-1"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Brand Logo -->
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-chart-line text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                        SPMA
+                    </span>
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors">How It Works</a>
+                    <a href="#key-features" class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors">Features</a>
+                    <a href="#stats" class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors">Impact</a>
+                </nav>
+
+                <!-- Auth Buttons -->
+                <div class="flex items-center space-x-4">
+                    <a href="login.html" class="px-5 py-2.5 text-sm font-semibold text-gray-700 hover:text-indigo-600 transition-colors">
+                        Sign In
+                    </a>
+                    <a href="register.html" class="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl shadow-md hover:shadow-indigo-300 hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative min-h-screen flex items-center justify-center pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto text-center">
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs sm:text-sm font-semibold mb-8 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-indigo-600 animate-ping"></span>
+                    <span>Student Placement Management & Analytics Platform</span>
+                </div>
+
+                <!-- Main Heading -->
+                <h1 class="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-gray-900 leading-[1.15] mb-6">
+                    Analyze Your Skills,<br>
+                    <span class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        Ace Your Placement
+                    </span>
+                </h1>
+
+                <!-- Subheading -->
+                <p class="max-w-2xl mx-auto text-lg sm:text-xl text-gray-600 font-normal leading-relaxed mb-10">
+                    Take assessments, identify gaps, get personalized course recommendations, and track your improvement — all in one platform.
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
+                    <a href="register.html" class="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-xl shadow-indigo-200 hover:shadow-indigo-300 transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                        <span>Get Started Free</span>
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </a>
+                    <a href="#features" class="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-semibold text-gray-700 bg-white hover:bg-gray-100 border border-gray-200 shadow-sm hover:shadow transition-all flex items-center justify-center gap-2">
+                        <span>Learn More</span>
+                        <i class="fa-solid fa-circle-play text-indigo-600 text-sm"></i>
+                    </a>
+                </div>
+
+                <!-- Trust banner / Highlights -->
+                <div class="mt-16 pt-8 border-t border-gray-200/60 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div>
+                        <div class="text-2xl font-bold text-gray-900">5+ Domains</div>
+                        <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider font-medium">Full Stack to AI</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-gray-900">75+ MCQs</div>
+                        <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider font-medium">Curated Questions</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-gray-900">Instant</div>
+                        <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider font-medium">Readiness Index</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-gray-900">100% Free</div>
+                        <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider font-medium">For All Students</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="features" class="py-24 bg-white relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-xs uppercase tracking-widest text-indigo-600 font-bold mb-3">Structured Workflow</h2>
+                    <h3 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">How It Works</h3>
+                    <p class="mt-4 text-base sm:text-lg text-gray-600">A data-driven 4-step framework to transition from skill diagnosis to campus job readiness.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+                    <!-- Step 1 -->
+                    <div class="bg-gray-50 rounded-2xl p-7 border border-gray-100 flex flex-col items-center text-center relative card-hover">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white flex items-center justify-center text-2xl shadow-lg shadow-indigo-100 mb-6">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full mb-3">Step 01</span>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Register & Choose</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Create your student profile and pick your target domain: Web Dev, Data Science, Cloud, or Core CS.
+                        </p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="bg-gray-50 rounded-2xl p-7 border border-gray-100 flex flex-col items-center text-center relative card-hover">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-purple-100 mb-6">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                        <span class="inline-block px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full mb-3">Step 02</span>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Take Assessment</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Attempt objective topic-wise tests to evaluate conceptual depth, coding logic, and industry aptitude.
+                        </p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="bg-gray-50 rounded-2xl p-7 border border-gray-100 flex flex-col items-center text-center relative card-hover">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-r from-indigo-600 to-pink-500 text-white flex items-center justify-center text-2xl shadow-lg shadow-pink-100 mb-6">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <span class="inline-block px-3 py-1 bg-pink-100 text-pink-700 text-xs font-bold rounded-full mb-3">Step 03</span>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Get Recommendations</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Receive personalized course modules designed to quickly bridge the exact skill gaps identified.
+                        </p>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="bg-gray-50 rounded-2xl p-7 border border-gray-100 flex flex-col items-center text-center relative card-hover">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-indigo-100 mb-6">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <span class="inline-block px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full mb-3">Step 04</span>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Track Improvement</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Monitor your placement readiness scores, analyze visual radar charts, and prepare for interviews.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="key-features" class="py-24 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-xs uppercase tracking-widest text-indigo-600 font-bold mb-3">Key Capabilities</h2>
+                    <h3 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">Everything You Need to Get Hired</h3>
+                    <p class="mt-4 text-base sm:text-lg text-gray-600">Built to empower college placement cells and ambitious MCA/BTech graduates.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover flex flex-col">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mb-6">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Smart Assessment Tests</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Domain-calibrated MCQs with instant scoring and detailed question breakdown to test your real-world proficiency.
+                        </p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover flex flex-col">
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl mb-6">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Personalized Course Suggestions</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Algorithmic course suggestions tailored to your weak areas, pointing you to top curated free and guided learning resources.
+                        </p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover flex flex-col">
+                        <div class="w-12 h-12 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xl mb-6">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Progress Tracking</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Re-attempt assessments, record performance trends over time, and see your growth trajectory visualized in clear graphs.
+                        </p>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover flex flex-col">
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-6">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Analytics Dashboard</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Rich visual analytics powered by modern charts reflecting topic accuracy, time efficiency, and percentile status.
+                        </p>
+                    </div>
+
+                    <!-- Feature 5 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover flex flex-col">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl mb-6">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Multiple Tech Domains</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Comprehensive coverage across Frontend, Backend, Machine Learning, DevOps, and Core Computer Science fundamentals.
+                        </p>
+                    </div>
+
+                    <!-- Feature 6 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover flex flex-col">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-6">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Placement Readiness Score</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            A standardized overall placement benchmark metric indicating your interview probability and hiring readiness.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section id="stats" class="py-20 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 text-white relative overflow-hidden">
+            <div class="absolute inset-0 bg-black/10"></div>
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div class="p-4">
+                        <div class="text-4xl sm:text-5xl font-black mb-2 tracking-tight">5</div>
+                        <div class="text-indigo-200 text-sm sm:text-base font-medium">Core Tech Domains</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="text-4xl sm:text-5xl font-black mb-2 tracking-tight">75+</div>
+                        <div class="text-indigo-200 text-sm sm:text-base font-medium">Assessment Questions</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="text-4xl sm:text-5xl font-black mb-2 tracking-tight">50+</div>
+                        <div class="text-indigo-200 text-sm sm:text-base font-medium">Curated Free Courses</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="text-4xl sm:text-5xl font-black mb-2 tracking-tight">Real-time</div>
+                        <div class="text-indigo-200 text-sm sm:text-base font-medium">Analytics & Reports</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Banner -->
+        <section class="py-20 bg-white">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-3xl p-10 md:p-14 border border-indigo-100 text-center relative overflow-hidden shadow-sm">
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
+                        Ready to elevate your campus placement journey?
+                    </h3>
+                    <p class="text-gray-600 max-w-2xl mx-auto mb-8 text-base sm:text-lg">
+                        Join your fellow batchmates, take your first assessment test in under 10 minutes, and identify your pathway to dream job offers.
+                    </p>
+                    <a href="register.html" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transform hover:-translate-y-0.5 transition-all">
+                        <span>Create Free Student Account</span>
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <!-- Branding -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white">
+                        <i class="fa-solid fa-chart-line text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-white tracking-tight">SPMA</span>
+                        <p class="text-xs text-gray-400">Student Placement Management Analytics</p>
+                    </div>
+                </div>
+
+                <!-- Academic Note -->
+                <div class="text-center text-xs text-gray-400">
+                    <p class="font-medium text-gray-300">MCA 1st Semester Minor Project</p>
+                    <p class="mt-0.5">Designed for Placement Assessment & Skill Gap Bridging</p>
+                </div>
+
+                <!-- Links and Year -->
+                <div class="flex items-center space-x-6 text-sm">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors" title="GitHub"><i class="fa-brands fa-github text-lg"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors" title="LinkedIn"><i class="fa-brands fa-linkedin text-lg"></i></a>
+                    <span class="text-xs text-gray-500">&copy; <span id="current-year"></span> SPMA. All rights reserved.</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Shared Auth Script -->
+    <script src="js/auth.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        // Check if user is already logged in
+        if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+            window.location.href = 'select-domain.html';
+        }
+
+        // Dynamic year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Navbar scroll glass effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('glass-nav', 'shadow-md');
+                navbar.classList.remove('h-20');
+                navbar.classList.add('h-16');
+            } else {
+                navbar.classList.remove('glass-nav', 'shadow-md');
+                navbar.classList.remove('h-16');
+                navbar.classList.add('h-20');
+            }
+        });
+    </script>
+</body>
+</html>
