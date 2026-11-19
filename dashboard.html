@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Analytics Dashboard - SPMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { 'sans': ['Inter', 'sans-serif'] } } }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        @media print {
+            nav, footer, .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .shadow-sm, .shadow-md, .shadow-xl {
+                box-shadow: none !important;
+                border: 1px solid #e5e7eb !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col font-sans antialiased">
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <i class="fas fa-chart-line text-indigo-600 text-2xl"></i>
+                        <span class="text-xl font-bold gradient-text">SPMA</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="select-domain.html" class="text-gray-600 hover:text-indigo-600 transition font-medium">Domains</a>
+                    <a href="dashboard.html" class="text-indigo-600 font-bold transition">Dashboard</a>
+                    <span id="nav-username" class="text-gray-700 font-medium"></span>
+                    <button onclick="logout()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:shadow-lg transition">Logout</button>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-gray-600"><i class="fas fa-bars text-xl"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-3 space-y-2">
+                <a href="select-domain.html" class="block text-gray-600 hover:text-indigo-600 py-2">Domains</a>
+                <a href="dashboard.html" class="block text-indigo-600 font-bold py-2">Dashboard</a>
+                <button onclick="logout()" class="w-full text-left text-red-600 py-2">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <!-- Dashboard Header -->
+        <section class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-8 sm:p-10 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-2 flex-wrap">
+                        <span class="px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold tracking-wide uppercase">MCA Analytics Portal</span>
+                        <span id="dash-domain-badge" class="px-3.5 py-1 rounded-full bg-indigo-900/40 backdrop-blur-md text-xs font-medium border border-white/20">Web Development</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Analytics Dashboard</h1>
+                    <p class="text-indigo-100 text-sm sm:text-base mt-2 flex items-center gap-2">
+                        <span>Welcome back, <strong id="welcome-student-name" class="font-bold text-white">Student</strong>! Here is your comprehensive placement performance profile.</span>
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 no-print">
+                    <div class="bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3 text-left">
+                        <span class="text-[11px] uppercase tracking-wider text-indigo-200 block font-medium">Last Activity</span>
+                        <span id="last-activity-date" class="text-sm font-bold text-white">Today</span>
+                    </div>
+                    <button onclick="window.print()" class="px-4 py-3 bg-white text-indigo-700 hover:bg-indigo-50 font-semibold rounded-2xl shadow-md text-sm flex items-center gap-2 transition">
+                        <i class="fas fa-print"></i>
+                        <span>Export Report</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- No Data State Alert (Shown if neither test has been attempted) -->
+        <div id="no-data-banner" class="hidden bg-indigo-50 border border-indigo-200 rounded-3xl p-8 text-center space-y-4">
+            <div class="w-16 h-16 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-2xl mx-auto shadow-md">
+                <i class="fas fa-clipboard-question"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900">No Assessment Data Yet</h3>
+            <p class="text-sm text-gray-600 max-w-lg mx-auto">
+                You haven't completed any domain tests yet. Take your initial diagnostic assessment to populate these charts, identify your skill gaps, and calculate your placement readiness score!
+            </p>
+            <div class="pt-2">
+                <a href="select-domain.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg transition">
+                    <span>Choose a Domain & Begin Test 1</span>
+                    <i class="fas fa-arrow-right text-xs"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Partial Data Banner (Shown if only Test 1 is finished) -->
+        <div id="partial-data-banner" class="hidden bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-3xl p-6 sm:p-7 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shrink-0">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div>
+                    <h4 class="text-base font-bold text-amber-950">Assessment Cycle Incomplete: Test 2 Pending</h4>
+                    <p class="text-xs sm:text-sm text-amber-800 mt-0.5">
+                        You have taken Test 1! Review your recommended courses and complete Test 2 to unlock multi-test growth trends and earn a 10% improvement bonus.
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0 w-full md:w-auto">
+                <a href="courses.html" class="flex-1 md:flex-none text-center px-4 py-2.5 rounded-xl bg-white border border-amber-300 text-amber-900 text-xs sm:text-sm font-semibold hover:bg-amber-100 transition">
+                    View Courses
+                </a>
+                <button onclick="startTest2()" class="flex-1 md:flex-none text-center px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-semibold shadow-md transition">
+                    Take Test 2
+                </button>
+            </div>
+        </div>
+
+        <!-- Key Metrics Row (4 Cards) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1: Test 1 Score -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 border-l-4 border-l-indigo-600 flex items-center justify-between card-hover">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Test 1 Score</p>
+                    <h3 id="card-t1-val" class="text-3xl font-extrabold text-gray-900 mt-1">--%</h3>
+                    <p id="card-t1-sub" class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                        <i class="fas fa-chart-line text-indigo-500"></i> Baseline Diagnostic
+                    </p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fas fa-file-signature"></i>
+                </div>
+            </div>
+
+            <!-- Card 2: Test 2 Score -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 border-l-4 border-l-purple-600 flex items-center justify-between card-hover">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Test 2 Score</p>
+                    <h3 id="card-t2-val" class="text-3xl font-extrabold text-gray-900 mt-1">--%</h3>
+                    <p id="card-t2-sub" class="text-xs text-purple-600 font-medium mt-1 flex items-center gap-1">
+                        <i class="fas fa-clock-rotate-left"></i> Not taken yet
+                    </p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fas fa-trophy"></i>
+                </div>
+            </div>
+
+            <!-- Card 3: Improvement -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 border-l-4 border-l-emerald-500 flex items-center justify-between card-hover">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Improvement</p>
+                    <h3 id="card-imp-val" class="text-3xl font-extrabold text-gray-900 mt-1">+0%</h3>
+                    <p id="card-imp-sub" class="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+                        <i class="fas fa-arrow-trend-up"></i> Growth indicator
+                    </p>
+                </div>
+                <div id="card-imp-icon" class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fas fa-arrow-up-right-dots"></i>
+                </div>
+            </div>
+
+            <!-- Card 4: Placement Readiness Score -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 border-l-4 border-l-pink-500 flex items-center justify-between card-hover">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Placement Readiness</p>
+                    <h3 id="card-readiness-val" class="text-3xl font-extrabold text-gray-900 mt-1">--%</h3>
+                    <p id="card-readiness-sub" class="text-xs font-semibold text-pink-600 mt-1 flex items-center gap-1">
+                        <i class="fas fa-bullseye"></i> Algorithmic Index
+                    </p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Placement Readiness Meter Section -->
+        <section class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-gauge-high text-indigo-600"></i> Placement Readiness Meter
+                    </h2>
+                    <p class="text-xs text-gray-500">Industry employability probability calibrated from topic scores and improvement velocity</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="readiness-level-badge" class="px-3.5 py-1 rounded-full text-xs font-extrabold bg-gray-100 text-gray-800 uppercase tracking-wider">
+                        Calculating...
+                    </span>
+                </div>
+            </div>
+
+            <!-- Visual Gradient Progress Gauge Bar -->
+            <div class="space-y-2">
+                <div class="relative w-full bg-gray-100 h-6 rounded-full overflow-hidden p-1 shadow-inner">
+                    <!-- Zones indicator lines -->
+                    <div class="absolute inset-0 flex pointer-events-none z-10 opacity-30">
+                        <div class="w-[40%] border-r border-black"></div>
+                        <div class="w-[30%] border-r border-black"></div>
+                        <div class="w-[30%]"></div>
+                    </div>
+                    <div id="readiness-gauge-bar" class="h-full rounded-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-500 transition-all duration-1000 ease-out shadow-sm" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-1">
+                    <span class="text-rose-500">0% Not Ready</span>
+                    <span class="text-amber-500">40% Getting There</span>
+                    <span class="text-emerald-500">70% Placement Ready</span>
+                    <span class="text-emerald-600">100% Elite</span>
+                </div>
+            </div>
+
+            <!-- Personalized Diagnostic Advice Box -->
+            <div id="readiness-message-box" class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex items-start gap-3">
+                <i class="fas fa-circle-check text-indigo-600 text-lg mt-0.5"></i>
+                <div>
+                    <h4 id="readiness-msg-title" class="font-bold text-gray-900 text-sm">Evaluating Profile...</h4>
+                    <p id="readiness-msg-desc" class="text-xs text-gray-600 mt-1 leading-relaxed">
+                        Complete your domain assessments to unlock customized MCA placement readiness feedback.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Row 1 (Doughnut Chart + Line Chart) -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Doughnut Chart: Overall Score Distribution -->
+            <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Score Distribution</h2>
+                        <p class="text-xs text-gray-500">Correct vs Incorrect answer ratio</p>
+                    </div>
+                    <i class="fas fa-chart-pie text-gray-400"></i>
+                </div>
+                <div class="relative flex-grow min-h-[280px] flex items-center justify-center">
+                    <canvas id="scoreDoughnutChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Line Chart: Score Trend -->
+            <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Score Trend Progression</h2>
+                        <p class="text-xs text-gray-500">Diagnostic Test 1 through Post-Revision Test 2</p>
+                    </div>
+                    <i class="fas fa-chart-line text-gray-400"></i>
+                </div>
+                <div class="relative flex-grow min-h-[280px]">
+                    <canvas id="trendLineChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Row 2 (Radar Chart + Grouped Bar Chart) -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Radar Chart: Multi-axis Skill Coverage -->
+            <div class="lg:col-span-6 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Skill Competency Radar</h2>
+                        <p class="text-xs text-gray-500">Curriculum topic balance across assessment rounds</p>
+                    </div>
+                    <i class="fas fa-compass text-gray-400"></i>
+                </div>
+                <div class="relative flex-grow min-h-[300px] flex items-center justify-center">
+                    <canvas id="dashRadarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Bar Chart: Topic Scores Comparison -->
+            <div class="lg:col-span-6 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Topic Performance Comparison</h2>
+                        <p class="text-xs text-gray-500">Percentage performance comparison by curriculum module</p>
+                    </div>
+                    <i class="fas fa-chart-simple text-gray-400"></i>
+                </div>
+                <div class="relative flex-grow min-h-[300px]">
+                    <canvas id="dashBarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Topic Analysis Table -->
+        <section class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 overflow-hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">Comprehensive Topic Audit</h2>
+                    <p class="text-xs text-gray-500">Granular view of test results, delta, course completion status, and mastery level</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">All Curriculum Modules</span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="text-xs uppercase tracking-wider text-gray-400 border-b border-gray-100 bg-gray-50/50">
+                            <th class="py-3.5 px-4 font-semibold rounded-l-xl">Topic</th>
+                            <th class="py-3.5 px-4 font-semibold text-center">Test 1</th>
+                            <th class="py-3.5 px-4 font-semibold text-center">Test 2</th>
+                            <th class="py-3.5 px-4 font-semibold text-center">Delta</th>
+                            <th class="py-3.5 px-4 font-semibold text-center">Courses Done</th>
+                            <th class="py-3.5 px-4 font-semibold text-center rounded-r-xl">Proficiency Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topic-analysis-tbody" class="divide-y divide-gray-100">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Learning Progress & Recommendations Row -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Learning Progress Card -->
+            <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fas fa-graduation-cap text-indigo-600"></i> Course Milestones
+                        </h2>
+                        <span id="courses-done-fraction" class="text-xs font-extrabold px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full">0 Completed</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-6">Tracking recommended online courses marked as completed in SPMA</p>
+
+                    <!-- Course Progress Bar -->
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-xs font-semibold">
+                            <span class="text-gray-600">Curriculum Progress</span>
+                            <span id="courses-done-pct" class="text-indigo-600 font-bold">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                            <div id="courses-progress-bar" class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Completed Courses List -->
+                    <div class="space-y-2.5">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400">Completed Modules</h4>
+                        <div id="completed-courses-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-gray-100 mt-6">
+                    <a href="courses.html" class="inline-flex items-center gap-2 text-xs font-bold text-indigo-600 hover:text-indigo-800">
+                        <span>Open Recommended Course Catalog</span>
+                        <i class="fas fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recommendations Summary (Action Items) -->
+            <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fas fa-lightbulb text-amber-500"></i> Targeted Action Items
+                        </h2>
+                        <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">Personalized</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-6">Automated next steps tailored to your weakest sub-skills</p>
+
+                    <div id="action-items-container" class="space-y-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-gray-100 mt-6 flex items-center justify-between">
+                    <span class="text-xs text-gray-400">Keep practicing daily to improve placement readiness</span>
+                    <span class="text-xs font-bold text-emerald-600"><i class="fas fa-shield-halved mr-1"></i> SPMA Placement Track</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions Row (Bottom) -->
+        <section class="bg-gradient-to-r from-gray-900 via-indigo-950 to-purple-950 text-white rounded-3xl p-8 shadow-xl no-print">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <h3 class="text-xl font-bold">Fast Actions & Tools</h3>
+                    <p class="text-sm text-gray-300 mt-1">Jump to domain selection, comparisons, or print a student audit report</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <a href="select-domain.html" class="flex-1 md:flex-none text-center px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm transition">
+                        <i class="fas fa-layer-group mr-1.5"></i> Take New Assessment
+                    </a>
+                    <a href="courses.html" class="flex-1 md:flex-none text-center px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm transition">
+                        <i class="fas fa-graduation-cap mr-1.5"></i> Course Suggestions
+                    </a>
+                    <a id="btn-compare-action" href="compare.html" class="flex-1 md:flex-none text-center px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold text-sm shadow-md transition">
+                        <i class="fas fa-code-compare mr-1.5"></i> Compare Results
+                    </a>
+                    <button onclick="window.print()" class="flex-1 md:flex-none text-center px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md transition">
+                        <i class="fas fa-download mr-1.5"></i> Download Report
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto py-6 no-print">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
+            &copy; 2026 Student Placement Management Analytics (SPMA). Built for MCA Placement Training & Analysis.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/data.js"></script>
+    <script>
+        requireAuth();
+
+        let chartInstances = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initDashboard();
+        });
+
+        function startTest2() {
+            setCurrentTestNumber(2);
+            window.location.href = 'test.html';
+        }
+
+        function initDashboard() {
+            const user = getCurrentUser();
+            if (user && user.name) {
+                document.getElementById('welcome-student-name').textContent = user.name;
+            }
+
+            let t1 = getTestResults(1);
+            let t2 = getTestResults(2);
+
+            const domainId = t1?.domainId || t2?.domainId || getSelectedDomain() || 'webdev';
+            const domain = getDomainById(domainId) || { id: 'webdev', name: 'Web Development', topics: ['HTML', 'CSS', 'JavaScript', 'React', 'Node.js'] };
+
+            document.getElementById('dash-domain-badge').textContent = domain.name;
+
+            // Handle date
+            const latestDate = t2?.date || t1?.date;
+            if (latestDate) {
+                const d = new Date(latestDate);
+                document.getElementById('last-activity-date').textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+
+            // Case 1: No test results exist
+            if (!t1 && !t2) {
+                document.getElementById('no-data-banner').classList.remove('hidden');
+                // Provide defaults so dashboard is visually complete and informative
+                t1 = {
+                    domainId: domain.id,
+                    testNumber: 1,
+                    totalQuestions: 15,
+                    correctAnswers: 10,
+                    score: 66.67,
+                    topicScores: {
+                        'HTML': { correct: 3, total: 3, percentage: 100 },
+                        'CSS': { correct: 2, total: 3, percentage: 66.67 },
+                        'JavaScript': { correct: 2, total: 3, percentage: 66.67 },
+                        'React': { correct: 1, total: 3, percentage: 33.33 },
+                        'Node.js': { correct: 2, total: 3, percentage: 66.67 }
+                    },
+                    date: new Date(Date.now() - 86400000).toISOString(),
+                    timeTaken: 540
+                };
+            }
+
+            // Case 2: Only Test 1 exists
+            const hasTest2 = !!t2;
+            if (!hasTest2 && t1) {
+                document.getElementById('partial-data-banner').classList.remove('hidden');
+            }
+
+            // Populate Key Metrics
+            const t1Score = t1 ? Math.round(t1.score || 0) : 0;
+            const t2Score = t2 ? Math.round(t2.score || 0) : null;
+            const diff = t2Score !== null ? (t2Score - t1Score) : 0;
+
+            document.getElementById('card-t1-val').textContent = `${t1Score}%`;
+            if (t2Score !== null) {
+                document.getElementById('card-t2-val').textContent = `${t2Score}%`;
+                document.getElementById('card-t2-sub').innerHTML = `<i class="fas fa-check-double text-purple-600"></i> Verified Post-Test`;
+                document.getElementById('card-imp-val').textContent = `${diff >= 0 ? '+' : ''}${diff}%`;
+                if (diff < 0) {
+                    document.getElementById('card-imp-val').className = 'text-3xl font-extrabold text-rose-600 mt-1';
+                    document.getElementById('card-imp-sub').className = 'text-xs text-rose-600 font-semibold mt-1 flex items-center gap-1';
+                    document.getElementById('card-imp-sub').innerHTML = `<i class="fas fa-arrow-trend-down"></i> -${Math.abs(diff)}% change`;
+                }
+            } else {
+                document.getElementById('card-t2-val').textContent = 'Pending';
+                document.getElementById('card-imp-val').textContent = 'N/A';
+                document.getElementById('card-imp-sub').textContent = 'Awaiting Test 2';
+            }
+
+            // Placement Readiness Formula
+            // If Test 2 exists: test2Score + (improvement * 0.1)
+            // If only Test 1: test1Score * 0.8
+            let readiness = 0;
+            if (t2Score !== null) {
+                readiness = Math.round(t2Score + (diff * 0.1));
+            } else {
+                readiness = Math.round(t1Score * 0.8);
+            }
+            readiness = Math.min(100, Math.max(0, readiness));
+
+            document.getElementById('card-readiness-val').textContent = `${readiness}%`;
+
+            // Setup Placement Readiness Meter
+            renderReadinessMeter(readiness, hasTest2);
+
+            // Render Charts
+            renderDoughnutChart(t1, t2);
+            renderLineTrendChart(t1, t2);
+            renderDashboardRadarChart(domain.topics, t1, t2);
+            renderDashboardBarChart(domain.topics, t1, t2);
+
+            // Render Topic Analysis Table
+            renderTopicAnalysisTable(domain.topics, t1, t2);
+
+            // Render Learning Progress
+            renderLearningProgress(domain.id);
+
+            // Render Recommendations Summary
+            renderRecommendations(domain.topics, t1, t2, hasTest2);
+        }
+
+        function renderReadinessMeter(readiness, hasTest2) {
+            const gaugeBar = document.getElementById('readiness-gauge-bar');
+            const badge = document.getElementById('readiness-level-badge');
+            const msgTitle = document.getElementById('readiness-msg-title');
+            const msgDesc = document.getElementById('readiness-msg-desc');
+
+            setTimeout(() => {
+                gaugeBar.style.width = `${readiness}%`;
+            }, 100);
+
+            if (readiness >= 70) {
+                badge.textContent = 'Placement Ready 🎯';
+                badge.className = 'px-3.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 uppercase tracking-wider';
+                msgTitle.textContent = 'High Employability Potential';
+                msgDesc.textContent = hasTest2
+                    ? 'Outstanding! Your topic accuracy and post-learning growth place you comfortably above campus placement screening thresholds.'
+                    : 'Good diagnostic baseline! Take Test 2 after quick revision to unlock your official placement qualification index.';
+            } else if (readiness >= 40) {
+                badge.textContent = 'Getting There 🚀';
+                badge.className = 'px-3.5 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 uppercase tracking-wider';
+                msgTitle.textContent = 'Moderate Readiness — Bridge 1-2 Topics';
+                msgDesc.textContent = 'You have established core concepts, but certain advanced questions and edge cases need attention before interview rounds.';
+            } else {
+                badge.textContent = 'Not Ready Yet ⚠️';
+                badge.className = 'px-3.5 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-800 uppercase tracking-wider';
+                msgTitle.textContent = 'Foundational Revision Recommended';
+                msgDesc.textContent = 'Focus on foundational course videos and coding practice for your lowest scoring topics before attending technical rounds.';
+            }
+        }
+
+        function renderDoughnutChart(t1, t2) {
+            const ctx = document.getElementById('scoreDoughnutChart').getContext('2d');
+            const activeTest = t2 || t1;
+            const correct = activeTest.correctAnswers || 10;
+            const incorrect = (activeTest.totalQuestions || 15) - correct;
+
+            if (chartInstances.doughnut) chartInstances.doughnut.destroy();
+
+            chartInstances.doughnut = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correct Answers', 'Incorrect Answers'],
+                    datasets: [{
+                        data: [correct, incorrect],
+                        backgroundColor: ['rgba(16, 185, 129, 0.85)', 'rgba(239, 68, 68, 0.85)'],
+                        borderColor: ['rgb(16, 185, 129)', 'rgb(239, 68, 68)'],
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` ${ctx.label}: ${ctx.raw} questions (${Math.round((ctx.raw / (correct + incorrect)) * 100)}%)`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderLineTrendChart(t1, t2) {
+            const ctx = document.getElementById('trendLineChart').getContext('2d');
+            const labels = ['Baseline (Test 1)', 'Post-Course (Test 2)'];
+            const dataPoints = [Math.round(t1.score || 0)];
+
+            if (t2) {
+                dataPoints.push(Math.round(t2.score || 0));
+            } else {
+                dataPoints.push(null);
+            }
+
+            if (chartInstances.line) chartInstances.line.destroy();
+
+            chartInstances.line = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Assessment Score %',
+                        data: dataPoints,
+                        borderColor: 'rgb(99, 102, 241)',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: 'rgb(147, 51, 234)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: ctx => ` Score: ${ctx.raw !== null ? ctx.raw + '%' : 'Pending'}` } }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: { callback: v => v + '%', font: { family: 'Inter', size: 11 } },
+                            grid: { color: 'rgba(243, 244, 246, 1)' }
+                        },
+                        x: {
+                            ticks: { font: { family: 'Inter', weight: 600, size: 12 }, color: '#374151' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderDashboardRadarChart(topics, t1, t2) {
+            const ctx = document.getElementById('dashRadarChart').getContext('2d');
+            const t1Data = topics.map(top => Math.round(t1.topicScores?.[top]?.percentage || 0));
+            const datasets = [{
+                label: 'Test 1 Baseline',
+                data: t1Data,
+                backgroundColor: 'rgba(99, 102, 241, 0.25)',
+                borderColor: 'rgb(99, 102, 241)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgb(99, 102, 241)'
+            }];
+
+            if (t2) {
+                const t2Data = topics.map(top => Math.round(t2.topicScores?.[top]?.percentage || 0));
+                datasets.push({
+                    label: 'Test 2 Verified',
+                    data: t2Data,
+                    backgroundColor: 'rgba(16, 185, 129, 0.25)',
+                    borderColor: 'rgb(16, 185, 129)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgb(16, 185, 129)'
+                });
+            }
+
+            if (chartInstances.radar) chartInstances.radar.destroy();
+
+            chartInstances.radar = new Chart(ctx, {
+                type: 'radar',
+                data: { labels: topics, datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 11 } } } },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: { display: false },
+                            pointLabels: { font: { family: 'Inter', size: 11, weight: 600 }, color: '#4b5563' },
+                            grid: { color: 'rgba(229, 231, 235, 0.8)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderDashboardBarChart(topics, t1, t2) {
+            const ctx = document.getElementById('dashBarChart').getContext('2d');
+            const t1Data = topics.map(top => Math.round(t1.topicScores?.[top]?.percentage || 0));
+            const datasets = [{
+                label: 'Test 1',
+                data: t1Data,
+                backgroundColor: 'rgba(99, 102, 241, 0.85)',
+                borderRadius: 6
+            }];
+
+            if (t2) {
+                const t2Data = topics.map(top => Math.round(t2.topicScores?.[top]?.percentage || 0));
+                datasets.push({
+                    label: 'Test 2',
+                    data: t2Data,
+                    backgroundColor: 'rgba(168, 85, 247, 0.85)',
+                    borderRadius: 6
+                });
+            }
+
+            if (chartInstances.bar) chartInstances.bar.destroy();
+
+            chartInstances.bar = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: topics, datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 11 } } } },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: { callback: v => v + '%', font: { family: 'Inter', size: 11 } },
+                            grid: { color: 'rgba(243, 244, 246, 1)' }
+                        },
+                        x: {
+                            ticks: { font: { family: 'Inter', weight: 600, size: 11 }, color: '#374151' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTopicAnalysisTable(topics, t1, t2) {
+            const tbody = document.getElementById('topic-analysis-tbody');
+            tbody.innerHTML = '';
+            const completedCourses = getCompletedCourses();
+
+            topics.forEach(topic => {
+                const s1 = Math.round(t1.topicScores?.[topic]?.percentage || 0);
+                const s2 = t2 ? Math.round(t2.topicScores?.[topic]?.percentage || 0) : null;
+                const delta = s2 !== null ? s2 - s1 : null;
+
+                // Check completed courses for topic
+                const topicCourses = getCoursesForTopic(t1.domainId || 'webdev', topic);
+                const doneForTopic = topicCourses.filter(c => completedCourses.includes(c.id)).length;
+
+                let deltaHtml = '<span class="text-gray-400 font-semibold">—</span>';
+                if (delta !== null) {
+                    if (delta > 0) deltaHtml = `<span class="font-bold text-emerald-600">+${delta}%</span>`;
+                    else if (delta === 0) deltaHtml = `<span class="font-semibold text-gray-500">0%</span>`;
+                    else deltaHtml = `<span class="font-bold text-rose-600">${delta}%</span>`;
+                }
+
+                const currentScore = s2 !== null ? s2 : s1;
+                let statusBadge = '';
+                if (currentScore >= 70) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Ready</span>`;
+                } else if (currentScore >= 40) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Intermediate</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800">Needs Focus</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50/60 transition';
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-bold text-gray-900">${topic}</td>
+                    <td class="py-3.5 px-4 text-center font-medium text-gray-700">${s1}%</td>
+                    <td class="py-3.5 px-4 text-center font-bold text-purple-700">${s2 !== null ? s2 + '%' : 'Pending'}</td>
+                    <td class="py-3.5 px-4 text-center">${deltaHtml}</td>
+                    <td class="py-3.5 px-4 text-center font-medium text-indigo-700">${doneForTopic} / ${topicCourses.length}</td>
+                    <td class="py-3.5 px-4 text-center">${statusBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderLearningProgress(domainId) {
+            const domainCourses = getCoursesForDomain(domainId);
+            let totalDomainCourses = 0;
+            const completedIds = getCompletedCourses();
+
+            const completedNames = [];
+            Object.values(domainCourses).forEach(list => {
+                list.forEach(c => {
+                    totalDomainCourses++;
+                    if (completedIds.includes(c.id)) {
+                        completedNames.push(c.name);
+                    }
+                });
+            });
+
+            const count = completedNames.length;
+            const pct = totalDomainCourses > 0 ? Math.round((count / totalDomainCourses) * 100) : 0;
+
+            document.getElementById('courses-done-fraction').textContent = `${count} of ${totalDomainCourses} Finished`;
+            document.getElementById('courses-done-pct').textContent = `${pct}%`;
+            document.getElementById('courses-progress-bar').style.width = `${pct}%`;
+
+            const listContainer = document.getElementById('completed-courses-list');
+            listContainer.innerHTML = '';
+
+            if (completedNames.length === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-gray-400 italic py-1">No courses checked yet. Visit the Recommended Courses page to begin!</p>`;
+            } else {
+                completedNames.forEach(name => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center gap-2 p-2 rounded-lg bg-emerald-50/60 border border-emerald-100 text-xs text-emerald-900 font-medium';
+                    item.innerHTML = `<i class="fas fa-check-circle text-emerald-600"></i> <span class="line-clamp-1">${name}</span>`;
+                    listContainer.appendChild(item);
+                });
+            }
+        }
+
+        function renderRecommendations(topics, t1, t2, hasTest2) {
+            const container = document.getElementById('action-items-container');
+            container.innerHTML = '';
+
+            const activeTest = t2 || t1;
+            const topicScores = activeTest.topicScores || {};
+
+            // Find lowest scoring topic
+            let lowestTopic = topics[0];
+            let minScore = 999;
+
+            topics.forEach(t => {
+                const s = topicScores[t]?.percentage || 0;
+                if (s < minScore) {
+                    minScore = s;
+                    lowestTopic = t;
+                }
+            });
+
+            const items = [
+                {
+                    icon: 'fa-bullseye',
+                    color: 'text-rose-600 bg-rose-50 border-rose-100',
+                    title: `Primary Focus: ${lowestTopic}`,
+                    desc: `Current score is ${Math.round(minScore)}%. Review recommended tutorials and practice coding challenges in this area.`
+                }
+            ];
+
+            if (!hasTest2) {
+                items.push({
+                    icon: 'fa-rocket',
+                    color: 'text-indigo-600 bg-indigo-50 border-indigo-100',
+                    title: 'Attempt Assessment Test 2',
+                    desc: 'Validate the courses you completed and unlock full comparative growth metrics.'
+                });
+            } else {
+                items.push({
+                    icon: 'fa-code-compare',
+                    color: 'text-purple-600 bg-purple-50 border-purple-100',
+                    title: 'Review Comparative Analytics',
+                    desc: 'Inspect your before-and-after radar charts to see how your skill coverage expanded.'
+                });
+            }
+
+            items.push({
+                icon: 'fa-briefcase',
+                color: 'text-emerald-600 bg-emerald-50 border-emerald-100',
+                title: 'Technical Mock Interview Prep',
+                desc: 'Prepare high-frequency conceptual questions and explain your solution complexity for campus interviews.'
+            });
+
+            items.forEach(it => {
+                const el = document.createElement('div');
+                el.className = `p-4 rounded-2xl border ${it.color} flex items-start gap-3.5`;
+                el.innerHTML = `
+                    <div class="w-8 h-8 rounded-xl bg-white shadow-xs flex items-center justify-center shrink-0 text-sm font-bold mt-0.5">
+                        <i class="fas ${it.icon}"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-sm">${it.title}</h4>
+                        <p class="text-xs text-gray-600 mt-0.5 leading-relaxed">${it.desc}</p>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+    </script>
+</body>
+</html>
