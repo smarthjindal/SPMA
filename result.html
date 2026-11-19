@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Results - SPMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { 'sans': ['Inter', 'sans-serif'] } } }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col font-sans antialiased">
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <i class="fas fa-chart-line text-indigo-600 text-2xl"></i>
+                        <span class="text-xl font-bold gradient-text">SPMA</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="select-domain.html" class="text-gray-600 hover:text-indigo-600 transition font-medium">Domains</a>
+                    <a href="dashboard.html" class="text-gray-600 hover:text-indigo-600 transition font-medium">Dashboard</a>
+                    <span id="nav-username" class="text-gray-700 font-medium"></span>
+                    <button onclick="logout()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:shadow-lg transition">Logout</button>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-gray-600"><i class="fas fa-bars text-xl"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-3 space-y-2">
+                <a href="select-domain.html" class="block text-gray-600 hover:text-indigo-600 py-2">Domains</a>
+                <a href="dashboard.html" class="block text-gray-600 hover:text-indigo-600 py-2">Dashboard</a>
+                <button onclick="logout()" class="w-full text-left text-red-600 py-2">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <!-- Header Banner Section -->
+        <section class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-8 sm:p-10 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-3 flex-wrap">
+                        <span id="test-badge" class="px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold tracking-wide uppercase">Test 1 Results</span>
+                        <span id="domain-badge" class="px-3.5 py-1 rounded-full bg-indigo-900/40 backdrop-blur-md text-xs font-medium border border-white/20">Web Development</span>
+                    </div>
+                    <h1 id="results-heading" class="text-3xl sm:text-4xl font-extrabold tracking-tight">Assessment Completed!</h1>
+                    <p class="text-indigo-100 text-sm sm:text-base mt-2 flex items-center gap-2">
+                        <i class="far fa-calendar-alt"></i>
+                        <span id="test-date">Completed on Oct 12, 2026</span>
+                    </p>
+                </div>
+                <div class="flex items-center gap-4 self-start md:self-auto">
+                    <div class="bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center min-w-[130px]">
+                        <span class="text-xs uppercase tracking-wider text-indigo-100 block font-medium">Domain</span>
+                        <span id="domain-name-header" class="text-xl font-bold">Web Dev</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Score Overview Cards (4 cards) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Overall Score -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-600"></div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Overall Score</p>
+                    <h3 id="stat-score" class="text-3xl font-extrabold text-gray-900 mt-1">0%</h3>
+                    <p id="stat-score-sub" class="text-xs text-gray-500 mt-1">Accuracy index</p>
+                </div>
+                <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl font-bold">
+                    <i class="fas fa-percent"></i>
+                </div>
+            </div>
+
+            <!-- Correct Answers -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Correct Answers</p>
+                    <h3 id="stat-correct" class="text-3xl font-extrabold text-gray-900 mt-1">0 / 15</h3>
+                    <p id="stat-incorrect" class="text-xs text-gray-500 mt-1">0 incorrect answers</p>
+                </div>
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-bold">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+
+            <!-- Time Taken -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Time Taken</p>
+                    <h3 id="stat-time" class="text-3xl font-extrabold text-gray-900 mt-1">0m 00s</h3>
+                    <p class="text-xs text-gray-500 mt-1">Allocated: 15m 00s</p>
+                </div>
+                <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold">
+                    <i class="fas fa-stopwatch"></i>
+                </div>
+            </div>
+
+            <!-- Performance Level -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between relative overflow-hidden">
+                <div id="level-indicator-bar" class="absolute top-0 left-0 w-1.5 h-full bg-purple-600"></div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Performance Level</p>
+                    <div class="mt-2">
+                        <span id="stat-level-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">Intermediate</span>
+                    </div>
+                    <p id="stat-level-desc" class="text-xs text-gray-500 mt-2">Solid foundation</p>
+                </div>
+                <div id="stat-level-icon" class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl font-bold">
+                    <i class="fas fa-medal"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Topic Breakdown Chart & Strengths / Weaknesses -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Topic Chart -->
+            <div class="lg:col-span-7 bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Topic-wise Breakdown</h2>
+                        <p class="text-xs text-gray-500">Percentage proficiency score per curriculum subject</p>
+                    </div>
+                    <span class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-medium">Target: &gt;70%</span>
+                </div>
+                <div class="relative flex-grow min-h-[300px]">
+                    <canvas id="topicBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Strengths and Weaknesses -->
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                <!-- Strengths -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm"><i class="fas fa-check"></i></span>
+                            Strengths 💪 (&ge; 66%)
+                        </h3>
+                        <span id="strengths-count" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">0 Topics</span>
+                    </div>
+                    <div id="strengths-list" class="space-y-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Needs Improvement -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center text-sm"><i class="fas fa-arrow-trend-up"></i></span>
+                            Needs Improvement 📈 (&lt; 66%)
+                        </h3>
+                        <span id="weaknesses-count" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700">0 Topics</span>
+                    </div>
+                    <div id="weaknesses-list" class="space-y-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Question Review (Collapsible Accordion) -->
+        <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">Detailed Question Review</h2>
+                    <p class="text-xs text-gray-500">Examine every answer, identify mistakes, and review detailed conceptual explanations</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleAllQuestions(true)" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition">Expand All</button>
+                    <button onclick="toggleAllQuestions(false)" class="text-xs text-gray-500 hover:text-gray-700 font-semibold px-3 py-1.5 rounded-lg hover:bg-gray-100 transition">Collapse All</button>
+                </div>
+            </div>
+
+            <div id="questions-review-container" class="space-y-4">
+                <!-- Dynamically generated accordion items -->
+            </div>
+        </section>
+
+        <!-- Bottom Action CTA Buttons -->
+        <section class="bg-gradient-to-r from-gray-900 to-indigo-950 text-white rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+                <h3 class="text-xl font-bold">Next Steps in Your Preparation</h3>
+                <p id="action-subtitle" class="text-sm text-gray-300 mt-1">Review course suggestions targeting your weak topics, or view analytics</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <a id="primary-action-btn" href="courses.html" class="flex-1 md:flex-none text-center bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition">
+                    <i class="fas fa-graduation-cap mr-2"></i> View Course Suggestions
+                </a>
+                <a href="dashboard.html" class="flex-1 md:flex-none text-center bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold px-5 py-3 rounded-xl transition">
+                    <i class="fas fa-chart-pie mr-2"></i> Dashboard
+                </a>
+                <a href="select-domain.html" class="flex-1 md:flex-none text-center bg-transparent hover:bg-white/10 text-gray-300 hover:text-white font-medium px-4 py-3 rounded-xl transition">
+                    Domains
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
+            &copy; 2026 Student Placement Management Analytics (SPMA). Built for student placement success.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/data.js"></script>
+    <script>
+        // Authentication check
+        requireAuth();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initResultPage();
+        });
+
+        function formatDuration(seconds) {
+            if (!seconds && seconds !== 0) return '0m 00s';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}m ${secs.toString().padStart(2, '0')}s`;
+        }
+
+        function initResultPage() {
+            // Determine which test results to show: CURRENT_TEST or fallback to latest available
+            const currentTestNum = getCurrentTestNumber() || 1;
+            let results = getTestResults(currentTestNum);
+
+            // Fallback if current test has no results, try other test
+            if (!results) {
+                const otherTestNum = currentTestNum === 1 ? 2 : 1;
+                results = getTestResults(otherTestNum);
+            }
+
+            // Fallback mock if completely empty so the user always sees a working demo page
+            if (!results) {
+                results = {
+                    domainId: getSelectedDomain() || 'webdev',
+                    testNumber: 1,
+                    totalQuestions: 15,
+                    correctAnswers: 10,
+                    score: 66.67,
+                    topicScores: {
+                        'HTML': { correct: 3, total: 3, percentage: 100 },
+                        'CSS': { correct: 2, total: 3, percentage: 66.67 },
+                        'JavaScript': { correct: 2, total: 3, percentage: 66.67 },
+                        'React': { correct: 1, total: 3, percentage: 33.33 },
+                        'Node.js': { correct: 2, total: 3, percentage: 66.67 }
+                    },
+                    date: new Date().toISOString(),
+                    timeTaken: 540,
+                    answers: [1, 1, 1, 1, 1, 0, 1, 2, 0, 1, 0, 1, 1, 1, 0]
+                };
+            }
+
+            const domain = getDomainById(results.domainId) || { name: 'Web Development', id: 'webdev' };
+
+            // Set Header Information
+            const testNum = results.testNumber || currentTestNum || 1;
+            document.getElementById('test-badge').textContent = `Test ${testNum} Results`;
+            document.getElementById('domain-badge').textContent = domain.name;
+            document.getElementById('domain-name-header').textContent = domain.name;
+            document.getElementById('results-heading').textContent = `Test ${testNum} Performance`;
+
+            const dateObj = results.date ? new Date(results.date) : new Date();
+            document.getElementById('test-date').textContent = `Completed on ${dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
+
+            // Populate Score Overview Cards
+            const scorePct = Math.round(results.score || 0);
+            document.getElementById('stat-score').textContent = `${scorePct}%`;
+            document.getElementById('stat-score-sub').textContent = scorePct >= 70 ? 'Excellent placement readiness' : scorePct >= 40 ? 'Moderate competency' : 'Requires targeted revision';
+
+            const correct = results.correctAnswers || 0;
+            const total = results.totalQuestions || 15;
+            document.getElementById('stat-correct').textContent = `${correct} / ${total}`;
+            document.getElementById('stat-incorrect').textContent = `${total - correct} incorrect answers`;
+
+            document.getElementById('stat-time').textContent = formatDuration(results.timeTaken);
+
+            // Performance Level calculation
+            const levelBadge = document.getElementById('stat-level-badge');
+            const levelDesc = document.getElementById('stat-level-desc');
+            const levelBar = document.getElementById('level-indicator-bar');
+            const levelIcon = document.getElementById('stat-level-icon');
+
+            if (scorePct >= 70) {
+                levelBadge.textContent = 'Advanced';
+                levelBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
+                levelDesc.textContent = 'Placement Ready (>70%)';
+                levelBar.className = 'absolute top-0 left-0 w-1.5 h-full bg-emerald-500';
+                levelIcon.className = 'w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-bold';
+            } else if (scorePct >= 40) {
+                levelBadge.textContent = 'Intermediate';
+                levelBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800';
+                levelDesc.textContent = 'Competent (40% - 70%)';
+                levelBar.className = 'absolute top-0 left-0 w-1.5 h-full bg-purple-600';
+                levelIcon.className = 'w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl font-bold';
+            } else {
+                levelBadge.textContent = 'Beginner';
+                levelBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800';
+                levelDesc.textContent = 'Needs Practice (<40%)';
+                levelBar.className = 'absolute top-0 left-0 w-1.5 h-full bg-rose-500';
+                levelIcon.className = 'w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl font-bold';
+            }
+
+            // Render Topic Bar Chart
+            renderTopicChart(results.topicScores || {});
+
+            // Render Strengths and Weaknesses
+            renderStrengthsWeaknesses(results.topicScores || {});
+
+            // Render Detailed Question Review Accordion
+            renderQuestionReview(results);
+
+            // Configure Action Buttons
+            const primaryActionBtn = document.getElementById('primary-action-btn');
+            const actionSubtitle = document.getElementById('action-subtitle');
+            if (testNum === 2) {
+                primaryActionBtn.innerHTML = '<i class="fas fa-code-compare mr-2"></i> Compare with Test 1';
+                primaryActionBtn.href = 'compare.html';
+                actionSubtitle.textContent = 'Inspect before & after growth, radar shifts, and skill metrics';
+            } else {
+                primaryActionBtn.innerHTML = '<i class="fas fa-graduation-cap mr-2"></i> View Course Suggestions';
+                primaryActionBtn.href = 'courses.html';
+                actionSubtitle.textContent = 'Review recommended lessons for weak subjects before attempting Test 2';
+            }
+        }
+
+        function renderTopicChart(topicScores) {
+            const labels = Object.keys(topicScores);
+            const percentages = labels.map(t => Math.round(topicScores[t].percentage || 0));
+
+            const backgroundColors = percentages.map(p => {
+                if (p >= 70) return 'rgba(16, 185, 129, 0.85)'; // Emerald
+                if (p >= 40) return 'rgba(245, 158, 11, 0.85)'; // Amber
+                return 'rgba(239, 68, 68, 0.85)';              // Rose
+            });
+
+            const borderColors = percentages.map(p => {
+                if (p >= 70) return 'rgb(16, 185, 129)';
+                if (p >= 40) return 'rgb(245, 158, 11)';
+                return 'rgb(239, 68, 68)';
+            });
+
+            const ctx = document.getElementById('topicBarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Score %',
+                        data: percentages,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1.5,
+                        borderRadius: 8,
+                        barThickness: 24
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const topic = labels[context.dataIndex];
+                                    const detail = topicScores[topic];
+                                    return ` Score: ${context.raw}% (${detail.correct}/${detail.total} correct)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            min: 0,
+                            max: 100,
+                            ticks: {
+                                callback: val => val + '%',
+                                font: { family: 'Inter', size: 11 }
+                            },
+                            grid: { color: 'rgba(243, 244, 246, 1)' }
+                        },
+                        y: {
+                            ticks: {
+                                font: { family: 'Inter', weight: 600, size: 12 },
+                                color: '#374151'
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderStrengthsWeaknesses(topicScores) {
+            const strengthsList = document.getElementById('strengths-list');
+            const weaknessesList = document.getElementById('weaknesses-list');
+            strengthsList.innerHTML = '';
+            weaknessesList.innerHTML = '';
+
+            let sCount = 0;
+            let wCount = 0;
+
+            Object.entries(topicScores).forEach(([topic, data]) => {
+                const pct = Math.round(data.percentage || 0);
+                if (pct >= 66) {
+                    sCount++;
+                    const card = document.createElement('div');
+                    card.className = 'flex items-center justify-between p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-100 transition hover:bg-emerald-50';
+                    card.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold"><i class="fas fa-check"></i></span>
+                            <span class="font-semibold text-gray-900 text-sm">${topic}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-emerald-800 font-medium">${data.correct}/${data.total} correct</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-200/60 text-emerald-800">${pct}%</span>
+                        </div>
+                    `;
+                    strengthsList.appendChild(card);
+                } else {
+                    wCount++;
+                    const card = document.createElement('div');
+                    card.className = 'flex items-center justify-between p-3.5 rounded-xl bg-rose-50/70 border border-rose-100 transition hover:bg-rose-50';
+                    card.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-full bg-rose-500 text-white flex items-center justify-center text-xs font-bold"><i class="fas fa-exclamation"></i></span>
+                            <span class="font-semibold text-gray-900 text-sm">${topic}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-rose-800 font-medium">${data.correct}/${data.total} correct</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-200/60 text-rose-800">${pct}%</span>
+                        </div>
+                    `;
+                    weaknessesList.appendChild(card);
+                }
+            });
+
+            document.getElementById('strengths-count').textContent = `${sCount} Topics`;
+            document.getElementById('weaknesses-count').textContent = `${wCount} Topics`;
+
+            if (sCount === 0) {
+                strengthsList.innerHTML = `<p class="text-xs text-gray-400 italic py-2">No topics reached the 66% threshold. Targeted revision suggested.</p>`;
+            }
+            if (wCount === 0) {
+                weaknessesList.innerHTML = `<p class="text-xs text-emerald-600 font-medium py-2">Awesome job! You scored &ge;66% in all topics.</p>`;
+            }
+        }
+
+        function renderQuestionReview(results) {
+            const container = document.getElementById('questions-review-container');
+            container.innerHTML = '';
+
+            const questions = getQuestionsForDomain(results.domainId);
+            const answers = results.answers || [];
+
+            questions.forEach((q, idx) => {
+                const userAnsIndex = answers[idx];
+                const isCorrect = userAnsIndex === q.correct;
+                const isUnanswered = userAnsIndex === undefined || userAnsIndex === null;
+
+                const accordionId = `accordion-q-${idx}`;
+                const item = document.createElement('div');
+                item.className = 'border border-gray-200 rounded-xl overflow-hidden bg-white shadow-xs';
+
+                const statusBadge = isCorrect
+                    ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1.5"><i class="fas fa-check-circle"></i> Correct</span>`
+                    : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 flex items-center gap-1.5"><i class="fas fa-times-circle"></i> Incorrect</span>`;
+
+                item.innerHTML = `
+                    <button type="button" onclick="toggleAccordion('${accordionId}')" class="w-full flex items-center justify-between p-4 sm:p-5 text-left bg-gray-50/50 hover:bg-gray-100/60 transition gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-lg bg-gray-200 text-gray-700 text-xs font-bold flex items-center justify-center shrink-0">Q${idx + 1}</span>
+                            <div>
+                                <span class="text-xs uppercase font-semibold text-indigo-600 block mb-0.5">${q.topic}</span>
+                                <h4 class="text-sm sm:text-base font-semibold text-gray-900 line-clamp-1">${q.question}</h4>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                            ${statusBadge}
+                            <i id="icon-${accordionId}" class="fas fa-chevron-down text-gray-400 text-sm transition-transform duration-200"></i>
+                        </div>
+                    </button>
+                    <div id="${accordionId}" class="hidden p-5 border-t border-gray-100 bg-white space-y-4">
+                        <p class="text-sm font-medium text-gray-900">${q.question}</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                            ${q.options.map((opt, optIdx) => {
+                                let styleClass = 'border-gray-200 bg-gray-50 text-gray-700';
+                                let icon = '';
+
+                                if (optIdx === q.correct) {
+                                    styleClass = 'border-emerald-500 bg-emerald-50 text-emerald-900 font-semibold ring-1 ring-emerald-500';
+                                    icon = '<i class="fas fa-check-circle text-emerald-600 ml-auto"></i>';
+                                } else if (optIdx === userAnsIndex && !isCorrect) {
+                                    styleClass = 'border-rose-500 bg-rose-50 text-rose-900 font-semibold ring-1 ring-rose-500';
+                                    icon = '<i class="fas fa-times-circle text-rose-600 ml-auto"></i>';
+                                }
+
+                                return `
+                                    <div class="flex items-center gap-2 p-3 rounded-lg border text-xs sm:text-sm ${styleClass}">
+                                        <span class="font-bold opacity-70">${String.fromCharCode(65 + optIdx)}.</span>
+                                        <span>${opt}</span>
+                                        ${icon}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <!-- Explanation Card -->
+                        <div class="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-100 text-xs sm:text-sm text-indigo-950 flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-indigo-600 mt-0.5 text-base"></i>
+                            <div>
+                                <span class="font-bold text-indigo-900 block mb-0.5">Explanation:</span>
+                                <p class="text-indigo-800 leading-relaxed">${q.explanation || 'No explanation provided.'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(item);
+            });
+        }
+
+        function toggleAccordion(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById(`icon-${id}`);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                el.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+
+        function toggleAllQuestions(expand) {
+            const items = document.querySelectorAll('#questions-review-container > div');
+            items.forEach((item, idx) => {
+                const el = document.getElementById(`accordion-q-${idx}`);
+                const icon = document.getElementById(`icon-accordion-q-${idx}`);
+                if (el && icon) {
+                    if (expand) {
+                        el.classList.remove('hidden');
+                        icon.classList.add('rotate-180');
+                    } else {
+                        el.classList.add('hidden');
+                        icon.classList.remove('rotate-180');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
